@@ -1,0 +1,18 @@
+<h1> Welcome to Big Bio API! </h1>
+
+
+<input type="text" id="search"></input>
+<button id="submit">Search</button>
+<div id="output"></div>
+
+<script>
+    async function getData(name){
+        const response = await fetch('http://localhost:3000/user/' + name);
+        var myJSON = await response.json();
+        console.log(myJSON);
+        document.getElementById('output').innerHTML = JSON.stringify(myJSON);
+    }
+    document.getElementById('submit').addEventListener('click', () => {
+        getData(document.getElementById('search').value);
+    });
+</script>
