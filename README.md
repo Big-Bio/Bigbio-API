@@ -1,3 +1,1 @@
-# Bigbio-API
-
-Big Bio REST API
+# Big Bio REST API
