@@ -2,10 +2,9 @@
   "name": "exp",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/server.js",
   "scripts": {
-    "start": "nodemon index.js",
-    "test": "echo hi"
+    "start": "nodemon src/server.js"
   },
   "author": "",
   "license": "ISC",

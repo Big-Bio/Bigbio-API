@@ -1,5 +1,4 @@
 const mysql = require('mysql');
-let path = require('path');
 const util = require('util')
 
 //Create connection
@@ -20,4 +19,4 @@ pool.on('connection', (conn) => {
     console.log('DB connected');
 })
 
-module.exports.executeQuery = pool.query;
+module.exports.query= pool.query;
