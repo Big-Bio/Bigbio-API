@@ -23,7 +23,7 @@ module.exports = {
     //creates JSWT
     sign: (data) => {return jwt.sign(data, process.env.JWT_SECRET, { expiresIn: '12h' })},
     //middleware that grabs token
-    verifyToken: (req, res, next) => {
+    verify: (req, res, next) => {
         const token = getTokenFromHeader(req);
         if (token == null) {
             res.sendStatus(403);
