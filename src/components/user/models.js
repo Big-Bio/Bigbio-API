@@ -3,8 +3,12 @@ const db = require('../../services/db')
 
 module.exports = {
     login: db.define('Users', {
-        username: sequelize.STRING,
-        password: sequelize.STRING,
+        username: {
+            type: sequelize.STRING,
+        },
+        password: {
+            type: sequelize.STRING,
+        },
         user_ID: {
             type: sequelize.INTEGER,
             primaryKey: true
@@ -12,5 +16,8 @@ module.exports = {
     }, {
             timestamps: false,
     }),
+    register: db.define('Users', 
+
+    )
 
 }

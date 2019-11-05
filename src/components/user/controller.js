@@ -1,5 +1,4 @@
 const service_path = '../../services'
-const sql = require(service_path + '/sql')
 const hash = require(service_path + '/hash')
 const token = require(service_path + '/jswb')
 const joi = require('joi');
@@ -19,10 +18,10 @@ module.exports = {
             .then((data) => comparePass(password, data))
             .then((data) => MakeToken(data))
             .then((key) => res.json({ status: true, token: key }))
-            .catch((err) => { res.status(404).json({ status: false, error: err }) })
+            .catch((err) => { res.status(400).json({ status: false, error: err }) })
     },
     register: (req,res) => {
-
+        
     }
 }
 
