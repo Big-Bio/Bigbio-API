@@ -6,5 +6,4 @@ module.exports = {
         return bcrypt.hash(password, process.env.SALT_ROUNDS);
     },
     compare: bcrypt.compare
-
 }

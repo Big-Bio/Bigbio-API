@@ -5,6 +5,8 @@ const auth = require('../../middleware/auth')
 
 router.post('/', controller.user_login)
 
+router.post('/signup', controller.signup)
+
 router.get('/', auth.verify, (req, res) => {
     res.send('yes')
 })

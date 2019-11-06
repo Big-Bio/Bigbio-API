@@ -3,13 +3,14 @@ const hash = require(service_path + '/hash')
 const token = require(service_path + '/jswb')
 const joi = require('joi');
 const model = require('./models')
+const md5 = require('md5')
 
 module.exports = {
     user_login: (req,res) => {
         const schema = joi.object().keys({
             username: joi.string().trim().required(),
             password: joi.string().min(0).max(20).required()
-        });
+        })
         const username = req.body.username
         const password = req.body.password
 
@@ -20,8 +21,12 @@ module.exports = {
             .then((key) => res.json({ status: true, token: key }))
             .catch((err) => { res.status(400).json({ status: false, error: err }) })
     },
-    register: (req,res) => {
-        
+    signup: async (req, res) => {
+        const email = req.body.email
+        const key = md5(email + Date.now())
+        model.signup.findOrCreate({where: {email: email, vkey: key}})
+        .then((data) => res.send(data))
+        .catch((err) => res.send(err))
     }
 }
 
