@@ -1,7 +1,7 @@
 const express = require('express')
 const logger = require('morgan')
 const bodyParser = require("body-parser")
-const db = require('./services/db')
+const db = require('./config/db')
 require('dotenv').config()
 
 const PORT = 2000
@@ -11,6 +11,7 @@ app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+//start database
 db.authenticate()
 .then(() => console.log('Database connected...'))
 .catch((err) => console.log(err))
