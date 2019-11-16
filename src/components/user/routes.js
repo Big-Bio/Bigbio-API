@@ -11,5 +11,8 @@ const controller = require('./controller')
 // })
 
 router.post('/login', controller.login)
+router.post('/signup', controller.signup)
+router.post('/register', controller.register)
+
 
 module.exports = router
