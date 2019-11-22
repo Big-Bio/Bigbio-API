@@ -28,10 +28,10 @@ User.prototype.validatePassword = async function (password) {
     return await brcypt.compare(password, this.password)
 }
 
-User.prototype.register = async function (data) {
+User.prototype.register = async function (username, password, vkey) {
     return (await User.update(
-        { username: data.username, password: data.password, registered: true },
-        { where: {vkey: data.vkey, registered: false}}
+        { username: username, password: password, registered: true },
+        { where: {vkey: vkey, registered: false}}
     ))[0]
 }
 
