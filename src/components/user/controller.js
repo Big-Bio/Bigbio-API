@@ -8,12 +8,12 @@ module.exports = {
         try{
             const asset = await User.findOne({ where: { username: req.body.username } })
             if (asset == null) 
-                res.json({ status: false, msg: 'Invalid username' })
+                res.json({ status: false, err: 'username', msg: 'Invalid username' })
             else
                 if (await asset.validatePassword(req.body.password))
                     res.json({status: true, token: asset.generateJWT()})    
                 else
-                    res.json({status: false, msg: "Invalid password"})
+                    res.json({status: false, err: 'password', msg: "Invalid password"})
         }
         catch{
             res.status(400)
@@ -37,15 +37,17 @@ module.exports = {
                 res.json({status: false, err: 'vkey', msg: 'Invalid vkey'})
             }
             else{
-                if(await asset.register(req.body.username, req.body.password, req.body.vkey)){
+                const reg = await asset.register(req.body.username, req.body.password, req.body.vkey)
+                if(reg.success){
                     res.json({ status: true, msg: 'Account registered' })
                 }
                 else{
-                    res.json({ status: false, err: 'vkey', msg: 'Invalid vkey' })
+                    res.json({ status: false, err: reg.err, msg: reg.msg })
                 }
             }
         }
         catch(e){
+            // res.json({ status: false, err: e, msg: e});
             res.json({ status: false, err: e.details[0].path[0], msg: e.details[0].message});
         }
     }

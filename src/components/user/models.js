@@ -1,8 +1,11 @@
+console.log(require('dotenv').config())
 const sequelize = require('sequelize')
 const db = require('../../config/db')
 const brcypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const md5 = require('md5')
+
+
 
 const User = db.define('users', {
     user_id: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true},
@@ -29,10 +32,21 @@ User.prototype.validatePassword = async function (password) {
 }
 
 User.prototype.register = async function (username, password, vkey) {
-    return (await User.update(
-        { username: username, password: password, registered: true },
-        { where: {vkey: vkey, registered: false}}
-    ))[0]
+    const asset = await User.findOne({where: {username: username}})
+    if(asset == null){
+        //fix this later
+        const hash = await brcypt.hash(password, 10)
+        if( (await User.update(
+            { username: username, password: hash, registered: true },
+            { where: { vkey: vkey, registered: false } }
+        ))[0]){
+            return {success: true}
+        }else{
+            return {sucess: false, err: 'vkey', msg: 'Invalid vkey'}
+        }
+    }else{
+        return {sucess: false, err: 'username', msg: 'Username already taken'}
+    }
 }
 
 User.signup = async function (email) {
