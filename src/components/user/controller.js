@@ -6,12 +6,14 @@ const Joi = require('joi')
 module.exports = {
     login: async (req, res) => {
         try{
-            const asset = await User.findOne({ where: { username: req.body.username } })
+            const asset = await User.findOne({ where: { username: req.body.username, registered: 1 } })
             if (asset == null) 
                 res.json({ status: false, err: 'username', msg: 'Invalid username' })
             else
-                if (await asset.validatePassword(req.body.password))
-                    res.json({status: true, token: asset.generateJWT()})    
+                if (await asset.validatePassword(req.body.password)){
+                    await User.update({ logged_at: Date.now() }, { where: { username: req.body.username } })
+                    res.json({status: true, token: asset.generateJWT()})
+                }
                 else
                     res.json({status: false, err: 'password', msg: "Invalid password"})
         }
@@ -47,7 +49,6 @@ module.exports = {
             }
         }
         catch(e){
-            // res.json({ status: false, err: e, msg: e});
             res.json({ status: false, err: e.details[0].path[0], msg: e.details[0].message});
         }
     }

@@ -1,11 +1,9 @@
-console.log(require('dotenv').config())
+require('dotenv').config()
 const sequelize = require('sequelize')
 const db = require('../../config/db')
 const brcypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const md5 = require('md5')
-
-
 
 const User = db.define('users', {
     user_id: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true},
@@ -34,10 +32,9 @@ User.prototype.validatePassword = async function (password) {
 User.prototype.register = async function (username, password, vkey) {
     const asset = await User.findOne({where: {username: username}})
     if(asset == null){
-        //fix this later
-        const hash = await brcypt.hash(password, 10)
+        const hash = await brcypt.hash(password, parseInt(process.env.SALT_ROUNDS))
         if( (await User.update(
-            { username: username, password: hash, registered: true },
+            { username: username, password: hash, registered: true, user_role: 'user' },
             { where: { vkey: vkey, registered: false } }
         ))[0]){
             return {success: true}
