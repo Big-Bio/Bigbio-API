@@ -2,12 +2,14 @@ const express = require('express')
 const logger = require('morgan')
 const bodyParser = require("body-parser")
 const db = require('./config/db')
+var cors = require('cors')
 require('dotenv').config()
 
 const PORT = 2000
 const app = express()
 
 app.use(logger('dev'));
+app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 

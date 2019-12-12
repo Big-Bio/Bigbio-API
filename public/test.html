@@ -1,11 +1,25 @@
-<form method="post">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    $(document).ready(() => {
+        $('button#submit').click((e) => {
+            test()
+        })
+    })
+    async function test(){
+        fetch('http://localhost:2000/user/login', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+            .then(res => res.json())//response type
+            .then(data => console.log(data)); //log the data;
+    }
+    
+</script>
+
+
     <label>Username:</label>
     <input type="text" id="username" name="username">
     <label>Password:</label>
     <input type="password" id="password" name="password">
-    <button type="submit">Login</button>
-</form>
+    <button type="submit" id= "submit">Login</button>
 
-<script>
-    
-</script>
+
+

@@ -22,7 +22,7 @@ const User = db.define('users', {
 }, { timestamps: false })
 
 User.prototype.generateJWT = function () {
-    return jwt.sign({ user_id: this.user_ID, username: this.username, email: this.email }, process.env.SECRET, { expiresIn: '5h' })
+    return jwt.sign({ user_id: this.user_id, username: this.username, email: this.email }, process.env.SECRET, { expiresIn: '5h' })
 }
 
 User.prototype.validatePassword = async function (password) {

@@ -9,8 +9,7 @@ module.exports = {
         }
         else {
             try {
-                await extract(token)
-                req.token = token;
+                req.token = await extract(token)
                 next();
             }
             catch{
@@ -30,10 +29,10 @@ function getTokenFromHeader(req) {
 
 async function extract(token) {
     try {
-        const authData = await jwt.verify(token, process.env.JWT_SECRET);
+        const authData = await jwt.verify(token, process.env.SECRET);
         return authData;
     }
-    catch{
+    catch(e){
         throw 'Error in extracting token'
     }
 }

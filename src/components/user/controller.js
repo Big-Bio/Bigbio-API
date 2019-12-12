@@ -1,11 +1,15 @@
 const Models = require('./models')
 const User = Models.User
-const Email = Models.Email
 const Joi = require('joi')
 
 module.exports = {
     login: async (req, res) => {
+        const schema = Joi.object({
+            username: Joi.string().alphanum().min(3).max(30).required(),
+            password: Joi.string().min(5).max(30).required()
+        })
         try{
+            await schema.validate({ username: req.body.username, password: req.body.password })
             const asset = await User.findOne({ where: { username: req.body.username, registered: 1 } })
             if (asset == null) 
                 res.json({ status: false, err: 'username', msg: 'Invalid username' })
@@ -17,8 +21,8 @@ module.exports = {
                 else
                     res.json({status: false, err: 'password', msg: "Invalid password"})
         }
-        catch{
-            res.status(400)
+        catch(e){
+            res.json({ status: false, err: e.details[0].path[0], msg: e.details[0].message });
         }
     },
     signup: async (req, res) => {
