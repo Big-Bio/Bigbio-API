@@ -38,8 +38,23 @@ Module.save = async (req) => {
         return { status: true, module_id: mod_obj.module_id }
     }catch(e){
         return { status: false, msg: 'Saving error'}
+    } 
+}
+
+Module.getById = async(id) => {
+    const mod =  await Module.findOne({where: {module_id: id}})
+    if (mod == null){
+        return false
     }
-    
+    return mod
+}
+
+Module.getByTitle = async(title) => {
+    const mod = await Module.findOne({ where: { title: title } })
+    if (mod == null) {
+        return false
+    }
+    return mod
 }
 
 Module.submit = async () => {

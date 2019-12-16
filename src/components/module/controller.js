@@ -2,6 +2,25 @@ const Module = require('./models').Module
 const Joi = require('joi')
 
 module.exports = {
+    get: async (req,res) => {
+        if(!req.query.id && !req.query.title){
+            res.status(400).json({ status: false, err: 'Invalid request' })
+        }
+        if(req.query.id){
+            const mod = await Module.getById(req.query.id)
+            if (!mod) {
+                res.json({ status: false, err: 'Invalid Module ID' })
+            }
+            res.json({ status: true, module: mod })
+        }else if(req.query.title){
+            const mod = await Module.getByTitle(req.query.title)
+            if (!mod) {
+                res.json({ status: false, err: 'Invalid Module title' })
+            }
+            res.json({ status: true, module: mod })
+        }
+        
+    },
     save: async (req, res) => {
         var result = await Module.save(req)
         res.send(result)
