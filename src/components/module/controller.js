@@ -19,11 +19,13 @@ module.exports = {
             }
             res.json({ status: true, module: mod })
         }
-        
     },
     save: async (req, res) => {
-        var result = await Module.save(req)
-        res.send(result)
+        var result = await Module.save(req.body, req.token.user_id)
+        if(result)
+            res.json({status: true, module_id: result})
+        else
+            res.json({status:false, err: 'Invalid save'})
     },
     submit: async (req, res) => {
         const schema = Joi.object({
@@ -37,6 +39,6 @@ module.exports = {
         })
     },
     publish: async (req, res) => {
-
+        
     }
 }

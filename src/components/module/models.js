@@ -19,25 +19,29 @@ const Module = db.define('modules', {
     date_modified: { type: sequelize.DATE },
 }, { timestamps: false })
 
-Module.save = async (req) => {
+Module.save = async (data, user_id) => {
     try{
         let mod_obj
-        if (!req.body.module_id)
+        if (!data.module_id){
             mod_obj = Module.build()
-        else
-            mod_obj = await Module.findOne({ where: { module_id: req.body.module_id, author_id: req.token.user_id } })
-        const data = req.body
+            mod_obj.date_created = Date.now()
+        }
+        else{
+            mod_obj = await Module.findOne({ where: { module_id: data.module_id, author_id: user_id } })
+            if(!mod_obj)
+                return false
+        }
         prop = ['title', 'content', 'sup_notes', 'ack', 'collab', 'doi', 'keyterms']
         for (var i = 0; i < prop.length; i++) {
             mod_obj[prop[i]] = data[prop[i]]
         }
-        mod_obj.author_id = req.token.user_id
-        mod_obj.date_created = Date.now()
-        mod_obj.date_modified = mod_obj.date_created
+        mod_obj.author_id = user_id
+        mod_obj.date_modified = Date.now()
+        mod_obj.status = 'draft'
         await mod_obj.save()
-        return { status: true, module_id: mod_obj.module_id }
+        return mod_obj.module_id
     }catch(e){
-        return { status: false, msg: 'Saving error'}
+        return false
     } 
 }
 
