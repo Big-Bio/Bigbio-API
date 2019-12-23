@@ -15,6 +15,7 @@ const User = db.define('users', {
     password: { type: sequelize.STRING, validate: {
         notEmpty: { msg: 'Password cannot be empty' }
     }},
+    user_role: { type: sequelize.STRING },
     logged_at: { type: sequelize.DATE },
     created_at: { type: sequelize.DATE },
     registered: { type: sequelize.BOOLEAN },
@@ -22,7 +23,7 @@ const User = db.define('users', {
 }, { timestamps: false })
 
 User.prototype.generateJWT = function () {
-    return jwt.sign({ user_id: this.user_id, username: this.username, email: this.email }, process.env.SECRET, { expiresIn: '5h' })
+    return jwt.sign({ user_id: this.user_id, username: this.username, email: this.email, user_role: this.user_role }, process.env.SECRET, { expiresIn: '5h' })
 }
 
 User.prototype.validatePassword = async function (password) {
@@ -39,10 +40,10 @@ User.prototype.register = async function (username, password, vkey) {
         ))[0]){
             return {success: true}
         }else{
-            return {sucess: false, err: 'vkey', msg: 'Invalid vkey'}
+            return { msg: 'Invalid vkey', err: 'vkey' }
         }
     }else{
-        return {sucess: false, err: 'username', msg: 'Username already taken'}
+        return { msg: 'Username already taken', err: 'username' }
     }
 }
 

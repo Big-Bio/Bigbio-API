@@ -24,14 +24,14 @@ app.use(require('./routes'))
 //Handler for 404 - Resource Not Found
 app.use((req, res, next) => {
     // res.status('404').sendFile(path.join(__dirname, '/public/404.html'))
-    res.status('404')
+    res.status('404').send('404')
 })
 
 //Handler for 500
 app.use((err, req, res, next) => {
     console.error(err.stack);
     // res.status('500').sendFile(path.join(__dirname, '/public/500.html'))
-    res.send('500')
+    res.status(500).send('500')
 })
 
 app.listen(PORT, () => console.log(`Server ${PORT} has started.`))
