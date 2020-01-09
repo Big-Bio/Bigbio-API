@@ -14,5 +14,6 @@ router.post('/login', controller.login)
 router.post('/signup', controller.signup)
 router.post('/register', controller.register)
 router.post('/verify', controller.verify)
+router.get('/key', controller.checkKey)
 
 module.exports = router

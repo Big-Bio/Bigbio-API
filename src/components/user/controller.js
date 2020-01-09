@@ -69,5 +69,16 @@ module.exports = {
                 res.status(400).json({msg: 'Unable to verify'})
             }
         }
+    },
+    checkKey: async (req,res) => {
+        try{
+            console.log(req.query)
+            const lookUp = await User.findOne({ where: { vkey: req.query.vkey, registered: 0 } })
+            if(!lookUp){ throw 'err' }
+            res.status(200).send()
+        }
+        catch(e){
+            res.status(200).json({ msg: 'Invalid validation key'})
+        }
     }
 }
