@@ -3,56 +3,40 @@ const sequelize = require('sequelize')
 const db = require('../../config/db')
 const brcypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const md5 = require('md5')
 
 const User = db.define('users', {
     user_id: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true},
-    email: { type: sequelize.STRING, validate: { isEmail: true } },
-    username: { type: sequelize.STRING, validate: { 
-        is: { args: ["^[A-Za-z0-9]+$", 'i'], msg: 'Invalid Username'}, 
-        notEmpty: {msg: 'Username cannot be empty'} 
-    }},
-    password: { type: sequelize.STRING, validate: {
-        notEmpty: { msg: 'Password cannot be empty' }
-    }},
-    user_role: { type: sequelize.STRING },
+    email: { type: sequelize.STRING },
+    username: { type: sequelize.STRING },
+    password: { type: sequelize.STRING },
+    role_id: { type: sequelize.INTEGER },
     logged_at: { type: sequelize.DATE },
     created_at: { type: sequelize.DATE },
     registered: { type: sequelize.BOOLEAN },
     vkey: { type: sequelize.STRING }
 }, { timestamps: false })
 
+//generates and return token with user_id, username, email, role_id
 User.prototype.generateJWT = function () {
-    return jwt.sign({ user_id: this.user_id, username: this.username, email: this.email, user_role: this.user_role }, process.env.SECRET, { expiresIn: '5h' })
+    return jwt.sign({ user_id: this.user_id, username: this.username, email: this.email, role_id: this.role_id }, process.env.SECRET, { expiresIn: '5h' })
 }
-
+//compares hased password with password and returns result
 User.prototype.validatePassword = async function (password) {
     return await brcypt.compare(password, this.password)
 }
-
-User.prototype.register = async function (username, password, vkey) {
-    const asset = await User.findOne({where: {username: username}})
-    if(asset == null){
-        const hash = await brcypt.hash(password, parseInt(process.env.SALT_ROUNDS))
-        if( (await User.update(
-            { username: username, password: hash, registered: true, user_role: 'user' },
-            { where: { vkey: vkey, registered: false } }
-        ))[0]){
-            return {success: true}
-        }else{
-            return { msg: 'Invalid vkey', err: 'vkey' }
-        }
-    }else{
-        return { msg: 'Username already taken', err: 'username' }
-    }
+//registers account and inserts username, hash_password
+User.prototype.register = async function (username, password) {
+    const hash_password = await brcypt.hash(password, parseInt(process.env.SALT_ROUNDS))
+    this.username = username
+    this.password = hash_password
+    this.registered = 1
+    return this.save().then(() => {return true}).catch(() => {throw 'Register Error'})
 }
-
-User.signup = async function (email) {
-    const vkey = md5(email + Date())
-    const query = await User.findOrCreate({ where: { email: email }, defaults: { vkey: vkey } })
-    if (query[1] === false)
-        throw 'Invalid email'
-    return vkey
+//returns if user exists depending on params
+User.exists = async function ( params ){
+    return User.findOne({where: params })
+    .then((result) => { if(result){ return true } else {return false} })
+    .catch(() => { throw 'Invalid parameters'})
 }
 
 const User_data = db.define('users_data', {

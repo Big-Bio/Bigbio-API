@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken');
+const sequelize = require('sequelize')
+const permissions = require('./permissions')
 require('dotenv').config();
 
-
-
+//get and return token from header, returns null if none exists in header
 function getTokenFromHeader(req) {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Token' ||
         req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
@@ -10,7 +11,7 @@ function getTokenFromHeader(req) {
     }
     return null;
 }
-
+//unpacks and returns jswt, return false if unable to extract
 async function extract(token) {
     try {
         const authData = await jwt.verify(token, process.env.SECRET);
@@ -20,8 +21,8 @@ async function extract(token) {
         return false
     }
 }
-
 module.exports = {
+    //middleware verifying if user is logged in
     verify: async (req, res, next) => {
         const token = getTokenFromHeader(req);
         if (token == null) {
@@ -37,5 +38,6 @@ module.exports = {
             }
         }
     },
-    extract: extract
+    extract: extract,
+    perm: permissions
 }
