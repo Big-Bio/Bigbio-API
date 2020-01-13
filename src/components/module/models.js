@@ -45,7 +45,7 @@ Module.save = async (data, user_id) => {
     } 
 }
 
-Module.getById = async(id) => {
+Module.getById = async (id) => {
     const mod =  await Module.findOne({where: {module_id: id}})
     if (mod == null){ return false }
     return mod

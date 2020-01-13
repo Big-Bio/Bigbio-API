@@ -72,18 +72,15 @@ module.exports = {
         .catch((e) => { res.json(e) })
     },
     //unpacks user's token and sends result
-    verify: async (req,res) => {
+    verify: (req,res) => {
          res.status(200).json(req.token)
     },
-    checkKey: async (req,res) => {
-        try{
-            console.log(req.query)
-            const lookUp = await User.findOne({ where: { vkey: req.query.vkey, registered: 0 } })
-            if(!lookUp){ throw 'err' }
-            res.status(200).send()
-        }
-        catch(e){
-            res.status(200).json({ msg: 'Invalid validation key'})
-        }
+    //checks if vkey is valid (vkey exists in database and is not used)
+    checkKey: (req,res) => {
+        return User.findOne({ where: { vkey: req.query.vkey, registered: 0 } })
+        .then((result) => {
+            if(result) {return res.status(200).json()}
+            else {return res.status(200).json({msg: 'Invalid verification key'})}
+        })
     }
 }
