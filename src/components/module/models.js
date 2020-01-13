@@ -19,30 +19,12 @@ const Module = db.define('modules', {
     date_modified: { type: sequelize.DATE },
 }, { timestamps: false })
 
-Module.save = async (data, user_id) => {
-    try{
-        let mod_obj
-        if (!data.module_id){
-            mod_obj = Module.build()
-            mod_obj.date_created = Date.now()
-        }
-        else{
-            mod_obj = await Module.findOne({ where: { module_id: data.module_id, author_id: user_id } })
-            if(!mod_obj)
-                return false
-        }
-        prop = ['title', 'content', 'sup_notes', 'ack', 'collab', 'doi', 'keyterms']
-        for (var i = 0; i < prop.length; i++) {
-            mod_obj[prop[i]] = data[prop[i]]
-        }
-        mod_obj.author_id = user_id
-        mod_obj.date_modified = Date.now()
-        mod_obj.status = 'draft'
-        await mod_obj.save()
-        return mod_obj.module_id
-    }catch(e){
-        return false
-    } 
+Module.prototype.saveData = async function(data){
+    property = ['title', 'content', 'sup_notes', 'ack', 'collab', 'doi', 'keyterms']
+    for(var i = 0; i < property.length; i++){
+        this[property[i]] = data[property[i]];
+    }
+    return this.save().catch(() => { throw 'Module Saving Error' })
 }
 
 Module.getById = async (id) => {
@@ -58,8 +40,10 @@ Module.getByTitle = async(title) => {
 }
 
 Module.submit = async () => {
-
+    
 }
+
+
 
 module.exports = {
     Module: Module

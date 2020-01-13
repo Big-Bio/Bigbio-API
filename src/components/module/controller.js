@@ -32,9 +32,24 @@ module.exports = {
         }
     },
     save: async (req, res) => {
-        var result = await Module.save(req.body, req.token.user_id)
-        if(result) { res.json({ module_id: result }) }
-        else { res.json({ msg: 'Invalid save'}) }
+        //find module by module_id
+        Module.findOne({where : {module_id : req.body.module_id}})
+        //creates new module
+        .catch(() =>  {
+            let moduleObject = Module.build()
+            moduleObject.author_id = req.token.user_id
+            moduleObject.author_name = req.token.username
+            return moduleObject
+        })
+        //if moduleObject is not found with module_id, send error
+        .then((moduleObject) => {
+            if (!moduleObject) { throw 'Invalid module_id' }
+            else { return moduleObject }
+        })
+        //save data into module
+        .then((moduleObject) => moduleObject.saveData(req.body))
+        .then(() => res.send())
+        .catch((e) => res.json({msg: e}))
     },
     submit: async (req, res) => {
         const schema = Joi.object({
@@ -48,6 +63,6 @@ module.exports = {
         })
     },
     publish: async (req, res) => {
-        
+        res.send('no')
     }
 }
