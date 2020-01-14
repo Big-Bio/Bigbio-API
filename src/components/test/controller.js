@@ -14,7 +14,8 @@ const UserCan = function(perm, user_id){
 const testEnviroment = async function (req, res){
     
     const a = await UserCan('super_delete_modules', 86)
-    res.send(a)
+    const b = await User.exists({email: 'dukedflm@gmail.com'})
+    res.send(b)
 }
 
 module.exports = testEnviroment

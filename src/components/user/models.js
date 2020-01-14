@@ -37,7 +37,7 @@ User.prototype.register = async function (username, password) {
     return this.save().then(() => {return true}).catch(() => {throw 'Register Error'})
 }
 //returns if user exists depending on params
-User.exists = async function ( params ){
+User.exists = async function (params){
     return User.findOne({where: params })
     .then((result) => { if(result){ return true } else {return false} })
     .catch(() => { throw 'Invalid parameters'})

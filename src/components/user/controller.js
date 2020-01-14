@@ -1,5 +1,4 @@
-const Models = require('./models')
-const User = Models.User
+const User = require('./models')
 const Joi = require('joi')
 const auth = require('../../middleware/auth')
 const md5 = require('md5')
