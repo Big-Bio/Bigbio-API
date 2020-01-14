@@ -38,6 +38,5 @@ module.exports = {
             }
         }
     },
-    extract: extract,
-    perm: permissions
+    extract: extract
 }

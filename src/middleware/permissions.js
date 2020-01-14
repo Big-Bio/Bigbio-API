@@ -1,8 +1,7 @@
 const db = require('../config/db')
 const sequelize = require('sequelize')
-const User = require('../components/user/models')
 
-const Perm = db.define('user_roles', {
+const UserRole = db.define('user_roles', {
     role_id: { type: sequelize.INTEGER, primaryKey: true},
     name: { type: sequelize.STRING },
     apply_contributor: { type: sequelize.BOOLEAN },
@@ -15,4 +14,4 @@ const Perm = db.define('user_roles', {
     publish_modules: { type: sequelize.BOOLEAN },
 }, { timestamps: false })
 
-module.exports = Perm;
+module.exports = UserRole;

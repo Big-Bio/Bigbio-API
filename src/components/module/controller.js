@@ -2,6 +2,9 @@ const Module = require('./models').Module
 const Joi = require('joi')
 const { Op } = require('sequelize')
 
+const User = require('../user/models')
+const Permissions = require('../../middleware/permissions')
+
 module.exports = {
     //add authentication for modules not ready
     get: async (req,res) => {
@@ -63,6 +66,6 @@ module.exports = {
         })
     },
     publish: async (req, res) => {
-        res.send('no')
+        
     }
 }

@@ -1,13 +1,14 @@
 /* GLOBAL ROUTES */
 const express = require('express');
-const user = require("./components/user/routes")
+const User = require("./components/user/routes")
 const Module = require("./components/module/routes")
+const Test = require('./components/test/routes')
 
 const router = express.Router()
 
-router.use('/user', user)
+router.use('/user', User)
 router.use('/module', Module)
-
+router.use('/test', Test)
 
 
 module.exports = router

@@ -3,6 +3,7 @@ const sequelize = require('sequelize')
 const db = require('../../config/db')
 const brcypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const UserRole = require('../../middleware/permissions')
 
 const User = db.define('users', {
     user_id: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true},
@@ -15,6 +16,9 @@ const User = db.define('users', {
     registered: { type: sequelize.BOOLEAN },
     vkey: { type: sequelize.STRING }
 }, { timestamps: false })
+
+//associate permissions with user
+User.hasOne(UserRole, {foreignKey: 'role_id', sourceKey: 'role_id', as: 'role'})
 
 //generates and return token with user_id, username, email, role_id
 User.prototype.generateJWT = function () {
@@ -60,6 +64,4 @@ const User_data = db.define('users_data', {
     profile_url: { type: sequelize.STRING }
 }, { timestamps: false })
 
-module.exports = {
-    User: User
-}
+module.exports = User
