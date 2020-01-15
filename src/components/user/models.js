@@ -24,18 +24,23 @@ User.hasOne(UserRole, {foreignKey: 'role_id', sourceKey: 'role_id', as: 'role'})
 User.prototype.generateJWT = function () {
     return jwt.sign({ user_id: this.user_id, username: this.username, email: this.email, role_id: this.role_id }, process.env.SECRET, { expiresIn: '5h' })
 }
+
 //compares hased password with password and returns result
 User.prototype.validatePassword = async function (password) {
     return await brcypt.compare(password, this.password)
 }
+
 //registers account and inserts username, hash_password
 User.prototype.register = async function (username, password) {
+    if(await User.exists({username: username})){ throw {msg: 'Username is taken'}}
+
     const hash_password = await brcypt.hash(password, parseInt(process.env.SALT_ROUNDS))
     this.username = username
     this.password = hash_password
     this.registered = 1
     return this.save().then(() => {return true}).catch(() => {throw 'Register Error'})
 }
+
 //returns if user exists depending on params
 User.exists = async function (params){
     return User.findOne({where: params })

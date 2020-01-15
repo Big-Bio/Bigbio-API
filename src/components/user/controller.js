@@ -34,7 +34,7 @@ module.exports = {
         .then(() => {return true})
         .catch((e) => { res.json({ msg: 'Invalid email'}); return false })
         if(!valid){ return }
-        
+
         //check if email is already in use
         if(await User.exists({email: email})){
             res.json({msg: 'Email is taken'});

@@ -11,32 +11,19 @@ function getTokenFromHeader(req) {
     }
     return null;
 }
-//unpacks and returns jswt, return false if unable to extract
-async function extract(token) {
-    try {
-        const authData = await jwt.verify(token, process.env.SECRET);
-        return authData;
-    }
-    catch(e){
-        return false
-    }
-}
+
 module.exports = {
-    //middleware verifying if user is logged in
+    //verify if valid token
     verify: async (req, res, next) => {
         const token = getTokenFromHeader(req);
-        if (token == null) {
-            res.sendStatus(403);
+        if (token == null) { res.sendStatus(403); return }
+        try{
+            const result = jwt.verify(token, process.env.SECRET)
+            req.token = result
+            next()
         }
-        else {
-            const process = await extract(token)
-            if(process){
-                req.token = process
-                next();
-            }else{
-                res.status(400).json({ msg: 'Invalid token' });
-            }
+        catch(e){
+            res.status(400).json({ msg: 'Invalid token' }) 
         }
-    },
-    extract: extract
+    }
 }
