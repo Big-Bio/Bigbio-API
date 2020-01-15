@@ -5,6 +5,7 @@ const db = require('../../config/db')
 const Module = db.define('modules', {
     module_id: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true },
     author_id: { type: sequelize.INTEGER },
+    author_name: { type: sequelize.STRING },
     status: { type: sequelize.STRING },
     title: { type: sequelize.STRING },
     content: { type: sequelize.STRING },
@@ -19,32 +20,21 @@ const Module = db.define('modules', {
     date_modified: { type: sequelize.DATE },
 }, { timestamps: false })
 
+//save properties into module
 Module.prototype.saveData = async function(data){
     property = ['title', 'content', 'sup_notes', 'ack', 'collab', 'doi', 'keyterms']
     for(var i = 0; i < property.length; i++){
         this[property[i]] = data[property[i]];
     }
+    this.date_modified = Date.now()
     return this.save().catch(() => { throw 'Module Saving Error' })
 }
 
-Module.getById = async (id) => {
-    const mod =  await Module.findOne({where: {module_id: id}})
-    if (mod == null){ return false }
-    return mod
-}
-
-Module.getByTitle = async(title) => {
-    const mod = await Module.findOne({ where: { title: title } })
-    if (mod == null){ return false }
-    return mod
-}
-
 Module.submit = async () => {
-    
+    this.status = 'pending'
+    this.save().catch(() => { throw 'Module Submit Error' })
 }
 
 
 
-module.exports = {
-    Module: Module
-}
+module.exports = Module

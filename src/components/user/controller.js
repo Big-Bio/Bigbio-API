@@ -8,8 +8,8 @@ module.exports = {
         const password = req.body.password
         
         return Joi.object({
-            username: Joi.string().alphanum().min(3).max(30).required(),
-            password: Joi.string().min(5).max(30).required()
+            username: Joi.string().alphanum().min(3).max(30).required().label('Username'),
+            password: Joi.string().min(5).max(30).required().label('Password')
         })
         //checks if valid username, password
         .validate({username: username, password: password})
@@ -29,7 +29,7 @@ module.exports = {
 
         //check if valid email
         const email = req.body.email
-        const valid = await Joi.object({ email: Joi.string().required().email() })
+        const valid = await Joi.object({ email: Joi.string().required().email().label('Email') })
         .validate({ email: email})
         .then(() => {return true})
         .catch((e) => { res.json({ msg: 'Invalid email'}); return false })

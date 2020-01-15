@@ -4,6 +4,7 @@ const db = require('../../config/db')
 const brcypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const UserRole = require('../../middleware/permissions')
+const Module = require('../module/models')
 
 const User = db.define('users', {
     user_id: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true},
@@ -19,6 +20,9 @@ const User = db.define('users', {
 
 //associate permissions with user
 User.hasOne(UserRole, {foreignKey: 'role_id', sourceKey: 'role_id', as: 'role'})
+Module.hasOne(User, { foreignKey: 'user_id', sourceKey: 'author_id', as: 'user' })
+User.hasMany(Module, {foreignKey: 'author_id', sourceKey: 'user_id', as: 'modules' })
+
 
 //generates and return token with user_id, username, email, role_id
 User.prototype.generateJWT = function () {

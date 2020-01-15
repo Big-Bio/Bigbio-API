@@ -1,42 +1,43 @@
-const Module = require('./models').Module
+const Module = require('./models')
 const Joi = require('joi')
 const { Op } = require('sequelize')
-
-const User = require('../user/models')
-const Permissions = require('../../middleware/permissions')
+const moment = require('moment')
 
 module.exports = {
-    //add authentication for modules not ready
-    get: async (req,res) => {
-        if(!req.query.id && !req.query.title){ res.status(400).json({ msg: 'Invalid request' }) }
-        if(req.query.id){
-            const mod = await Module.getById(req.query.id)
-            if (!mod) {
-                res.json({ msg: 'Invalid Module ID' })
-            }
-            res.json({ status: true, module: mod })
-        }else if(req.query.title){
-            const mod = await Module.getByTitle(req.query.title)
-            if (!mod) {
-                res.json({ msg: 'Invalid Module title' })
-            }
-            res.json({ module: mod })
-        }
+    //return published module by name or title
+    getPublished: async (req,res) => {
+        const title = req.query.title || null
+        const module_id = req.query.id || null
+        
+        Module.findOne({where: { [Op.and] : [ {status: 'publish'}, {[Op.or]: [ {title: title},{module_id: module_id} ]} ]} })
+        .then((moduleObject) => {if(!moduleObject){throw 'err'} else { res.status(200).json(moduleObject) }})
+        .catch(() => { res.status(200).json( {msg: 'Cannot find module'})})
     },
+    //get 10 most recent owned modules. if datetime D is specified, return 10 recent modules modified after D
     getRecent: async (req, res) => {
-        //let time = new Date(req.body.datetime)
-        const time = Date.now()
-        try{
-            const mods = await Module.findAll({ limit: 10, where: { author_id: req.token.user_id, date_modified: { [Op.lte]: time } }, order: [['date_modified', 'DESC']] })
-            if ( mods == null || mods.length == 0 ){ throw 'err' } else { res.json({ modules: mods }) }
-        }
-        catch{
-            res.json({msg: 'No modules left'})
-        }
+        let time = moment(new Date(req.query.datetime)) || Date.now()
+        Module.findAll({
+            limit: 10, where: {
+                author_id: req.token.user_id,
+                date_modified: { [Op.lt]: time }
+            },
+            order: [['date_modified', 'DESC']]
+        })
+        .then((moduleObjects) => { res.status(200).json({modules: moduleObjects}) })
+        .catch((e) => { res.json({msg: 'Invalid datetime'}) })
     },
+    //returns owned module by ID
+    load: (req, res) =>{
+        const module_id = req.query.module_id
+        Module.findOne({ where: { module_id: module_id, author_id: req.token.user_id } })
+        .then((moduleObject) => { if (!moduleObject) { throw 'err' } else { res.json(moduleObject) }})
+        .catch(() => { res.status(200).json({msg: 'Invalid Module ID'}) })
+    },
+    //if module_id specified and user owns module, update module
+    //else create new module
     save: async (req, res) => {
         //find module by module_id
-        Module.findOne({where : {module_id : req.body.module_id}})
+        Module.findOne({where : {module_id : req.body.module_id, author_id: req.token.user_id}})
         //creates new module
         .catch(() =>  {
             let moduleObject = Module.build()
@@ -54,16 +55,20 @@ module.exports = {
         .then(() => res.send())
         .catch((e) => res.json({msg: e}))
     },
+    //submit module to admins for approval/revision
     submit: async (req, res) => {
-        const schema = Joi.object({
+        Joi.object({
             title: Joi.string().max(100).required().label('Title'),
-            content: Joi.string().max(500).required(),
-            sup_notes: Joi.string().max(300).required(),
-            ack: Joi.string().max(300).required(),
-            collab: Joi.string().max(200).required(),
-            doi: Joi.string().max(300).required(),
-            keyterms: Joi.string().max(100).required()
+            content: Joi.string().max(500).required().label('Content'),
+            sup_notes: Joi.string().max(300).required().label('Supplement Notes'),
+            ack: Joi.string().max(300).required().label('Acknowledgements'),
+            collab: Joi.string().max(200).label('Collaborators'),
+            doi: Joi.string().max(300).label('DOI'),
+            keyterms: Joi.string().max(100).required().label('Key Terms')
         })
+        .validate(req.body)
+        .catch((e) => { throw {msg: e.details[0].message, field: e.details[0].path}})
+        .catch((e) => { res.json(e)})
     },
     publish: async (req, res) => {
         

@@ -8,6 +8,8 @@ require('dotenv').config()
 const PORT = 2000
 const app = express()
 
+Date.prototype.toJSON = function () { return this.toLocaleString(); }
+
 app.use(logger('dev'));
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
