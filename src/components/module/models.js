@@ -22,6 +22,7 @@ const Module = db.define('modules', {
 
 //save properties into module
 Module.prototype.saveData = async function(data){
+    console.log(this)
     property = ['title', 'content', 'sup_notes', 'ack', 'collab', 'doi', 'keyterms']
     for(var i = 0; i < property.length; i++){
         this[property[i]] = data[property[i]];
@@ -30,11 +31,14 @@ Module.prototype.saveData = async function(data){
     return this.save().catch(() => { throw 'Module Saving Error' })
 }
 
-Module.submit = async () => {
+Module.prototype.submit = async function(){
     this.status = 'pending'
-    this.save().catch(() => { throw 'Module Submit Error' })
+    return this.save().catch(() => { throw 'Module Submit Error' })
 }
 
-
+Module.prototype.publish = async function(){
+    this.status = 'publish'
+    return this.save().catch(() => { throw 'Module Publish Error '})
+}
 
 module.exports = Module

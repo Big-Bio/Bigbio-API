@@ -52,6 +52,7 @@ User.exists = async function (params){
     .catch(() => { throw 'Invalid parameters'})
 }
 
+
 const User_data = db.define('users_data', {
     user_id: { type: sequelize.INTEGER },
     first_name: { type: sequelize.STRING },

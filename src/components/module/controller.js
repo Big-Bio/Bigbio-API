@@ -64,13 +64,22 @@ module.exports = {
             ack: Joi.string().max(300).required().label('Acknowledgements'),
             collab: Joi.string().max(200).label('Collaborators'),
             doi: Joi.string().max(300).label('DOI'),
-            keyterms: Joi.string().max(100).required().label('Key Terms')
+            keyterms: Joi.string().max(100).required().label('Key Terms'),
+            module_id : Joi.number().required()
         })
         .validate(req.body)
         .catch((e) => { throw {msg: e.details[0].message, field: e.details[0].path}})
-        .catch((e) => { res.json(e)})
+        .then(() => Module.findOne({where: {author_id: req.token.user_id, module_id: req.body.module_id}}))
+        .then((moduleObject) => { if(!moduleObject) { throw {msg: 'Invalid Module ID'}} else {return moduleObject} })
+        .then((moduleObject) => moduleObject.saveData(req.body))
+        .then((moduleObject) => moduleObject.submit())
+        .then(() => res.status(200).json())
+        .catch((e) => { res.json(e) })
     },
     publish: async (req, res) => {
-        
+        Module.findOne({ where: {module_id: req.body.module_id }})
+        .then((moduleObject) => moduleObject.publish())
+        .then(() => res.status(200).json())
+        .catch((e) => res.status(200).json({msg: 'Invalid Module ID'}))
     }
 }
