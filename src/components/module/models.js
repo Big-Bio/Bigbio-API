@@ -22,7 +22,6 @@ const Module = db.define('modules', {
 
 //save properties into module
 Module.prototype.saveData = async function(data){
-    console.log(this)
     property = ['title', 'content', 'sup_notes', 'ack', 'collab', 'doi', 'keyterms']
     for(var i = 0; i < property.length; i++){
         this[property[i]] = data[property[i]];

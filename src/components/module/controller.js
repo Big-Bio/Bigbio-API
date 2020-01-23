@@ -28,7 +28,7 @@ module.exports = {
     },
     //returns owned module by ID
     load: (req, res) =>{
-        const module_id = req.query.module_id
+        const module_id = req.query.id
         Module.findOne({ where: { module_id: module_id, author_id: req.token.user_id } })
         .then((moduleObject) => { if (!moduleObject) { throw 'err' } else { res.json(moduleObject) }})
         .catch(() => { res.status(200).json({msg: 'Invalid Module ID'}) })
