@@ -41,5 +41,19 @@ module.exports = {
             }
         })
         .catch(() => res.status(400).json({msg: 'Invalid entry'}))
+    },
+    notLoggedIn: (req, res, next)=>{
+        const token = getTokenFromHeader(req);
+        console.log(token)
+        if (token == null) { next(); }
+        else{
+            try {
+                const result = jwt.verify(token, process.env.SECRET)
+                res.status(200).json({ msg: 'User already logged in' })
+            }
+            catch (e) {
+                next();
+            }
+        }
     }
 }

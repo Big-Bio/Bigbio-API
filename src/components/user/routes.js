@@ -11,9 +11,9 @@ const auth = require('../../middleware/auth')
 //     res.send('yes')
 // })
 
-router.post('/login', controller.login)
-router.post('/signup', controller.signup)
-router.post('/register', controller.register)
+router.post('/login', auth.notLoggedIn, controller.login)
+router.post('/signup', auth.notLoggedIn, controller.signup)
+router.post('/register', auth.notLoggedIn, controller.register)
 router.post('/verify', auth.verify, controller.verify)
 router.get('/key', controller.checkKey)
 

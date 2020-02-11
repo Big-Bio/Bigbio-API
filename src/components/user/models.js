@@ -35,13 +35,14 @@ User.prototype.validatePassword = async function (password) {
 }
 
 //registers account and inserts username, hash_password
-User.prototype.register = async function (username, password) {
+User.prototype.register = async function (username, password, user_data) {
     if(await User.exists({username: username})){ throw {msg: 'Username is taken'}}
 
     const hash_password = await brcypt.hash(password, parseInt(process.env.SALT_ROUNDS))
     this.username = username
     this.password = hash_password
     this.registered = 1
+ 
     return this.save().then(() => {return true}).catch(() => {throw 'Register Error'})
 }
 

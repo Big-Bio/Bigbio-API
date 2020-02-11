@@ -56,8 +56,14 @@ module.exports = {
         //schema to validate request data
         const schema = Joi.object({
             vkey: Joi.string().required(),
-            username: Joi.string().alphanum().min(3).max(30).required(),
-            password: Joi.string().min(5).max(30).required()
+            username: Joi.string().alphanum().min(3).max(30).required().label('Username'),
+            password: Joi.string().min(5).max(30).required().label('Password'),
+            // first_name: Joi.string().required().label('First name'),
+            // last_name: Joi.string().required().label('Last name'),
+            // age: Joi.number().required().label('Age'),
+            // country: Joi.string().required().label('Country'),
+            // state_province: Joi.string().required().label('State/Province'),
+            // ethnicity: Joi.string().required().label('Ethnicity'),
         })
         //checks if valid username, password, vkey
         .validate({ username: username, password: password, vkey: vkey })
