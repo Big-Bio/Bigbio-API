@@ -4,8 +4,8 @@ const { Op } = require('sequelize')
 const moment = require('moment')
 
 module.exports = {
-    //return published module by name or title
-    getPublished: async (req,res) => {
+    //return published module by id or title
+    getSinglePublished: async (req,res) => {
         const title = req.query.title || null
         const module_id = req.query.id || null
         
@@ -13,18 +13,33 @@ module.exports = {
         .then((moduleObject) => {if(!moduleObject){throw 'err'} else { res.status(200).json(moduleObject) }})
         .catch(() => { res.status(200).json( {msg: 'Cannot find module'})})
     },
-    //get 10 most recent owned modules. if datetime D is specified, return 10 recent modules modified after D
-    getRecent: async (req, res) => {
-        let time = moment(new Date(req.query.datetime)) || Date.now()
-        Module.findAll({
+    //get 10 most published modules where page >=1
+    getRecentPublished: async (req, res) => {
+        Joi.object({ page: Joi.number().required() })
+        .validate({ page: req.query.page })
+        .then((offset) => Module.findAll({
             limit: 10, where: {
-                author_id: req.token.user_id,
-                date_modified: { [Op.lt]: time }
+                status: 'publish'
             },
+            offset: (offset.page - 1) * 10,
             order: [['date_modified', 'DESC']]
-        })
+        }))
+        .then((moduleObjects) => { res.status(200).json({ modules: moduleObjects }) })
+        .catch((e) => { res.json({ msg: 'Invalid page' }) })
+    },
+    //get 10 most recent owned modules where page >= 1
+    getRecent: async (req, res) => {
+        Joi.object({ page: Joi.number().required() })
+        .validate({page: req.query.page})
+        .then( (offset) => Module.findAll({
+            limit: 10, where: {
+                author_id: req.token.user_id
+            },
+            offset: (offset.page - 1)*10,
+            order: [['date_modified', 'DESC']]
+        }))
         .then((moduleObjects) => { res.status(200).json({modules: moduleObjects}) })
-        .catch((e) => { res.json({msg: 'Invalid datetime'}) })
+        .catch((e) => { res.json({msg: 'Invalid page'}) })
     },
     //returns owned module by ID
     load: (req, res) =>{

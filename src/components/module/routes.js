@@ -5,7 +5,8 @@ const auth = require('../../middleware/auth')
 
 
 //user routes
-router.get('', controller.getPublished)
+router.get('', controller.getSinglePublished)
+router.get('/getPublished', controller.getRecentPublished)
 router.get('/getRecent', auth.verify, controller.getRecent)
 router.get('/load', auth.verify, controller.load)
 router.post('/save', auth.verify, controller.save)

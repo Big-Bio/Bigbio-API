@@ -29,12 +29,12 @@ Module.prototype.saveData = async function(data){
     this.date_modified = Date.now()
     return this.save().catch(() => { throw 'Module Saving Error' })
 }
-
+//submit module to admins
 Module.prototype.submit = async function(){
     this.status = 'pending'
     return this.save().catch(() => { throw 'Module Submit Error' })
 }
-
+//publish module
 Module.prototype.publish = async function(){
     this.status = 'publish'
     return this.save().catch(() => { throw 'Module Publish Error '})
