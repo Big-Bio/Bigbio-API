@@ -12,6 +12,8 @@ router.get('/load', auth.verify, controller.load)
 router.post('/save', auth.verify, controller.save)
 router.post('/submit', auth.verify, controller.submit)
 
+
 //admin routes
 router.post('/publish', auth.verify, controller.publish)
+router.get('/getSubmitted', auth.verify, controller.getSubmitted)
 module.exports = router

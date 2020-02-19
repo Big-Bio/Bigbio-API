@@ -24,8 +24,25 @@ module.exports = {
             offset: (offset.page - 1) * 10,
             order: [['date_modified', 'DESC']]
         }))
-        .then((moduleObjects) => { res.status(200).json({ modules: moduleObjects }) })
+        .then((moduleObjects) => { 
+                if(moduleObjects.length == 0){ res.status(200).json({msg: 'No modules left'})} 
+                else { res.status(200).json({ modules: moduleObjects }) } })
         .catch((e) => { res.json({ msg: 'Invalid page' }) })
+    },
+    getSubmitted: async (req,res) => {
+        Joi.object({ page: Joi.number().required() })
+            .validate({ page: req.query.page })
+            .then((offset) => Module.findAll({
+                limit: 10, where: {
+                    status: 'pending'
+                },
+                offset: (offset.page - 1) * 10,
+                order: [['date_modified', 'DESC']]
+            }))
+            .then((moduleObjects) => { 
+                if(moduleObjects.length == 0){ res.status(200).json({msg: 'No modules left'})} 
+                else { res.status(200).json({ modules: moduleObjects }) } })
+            .catch((e) => { res.json({ msg: 'Invalid page' }) })
     },
     //get 10 most recent owned modules where page >= 1
     getRecent: async (req, res) => {
@@ -38,7 +55,9 @@ module.exports = {
             offset: (offset.page - 1)*10,
             order: [['date_modified', 'DESC']]
         }))
-        .then((moduleObjects) => { res.status(200).json({modules: moduleObjects}) })
+        .then((moduleObjects) => { 
+                if(moduleObjects.length == 0){ res.status(200).json({msg: 'No modules left'})} 
+                else { res.status(200).json({ modules: moduleObjects }) } })
         .catch((e) => { res.json({msg: 'Invalid page'}) })
     },
     //returns owned module by ID
