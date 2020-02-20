@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../components/user/models')
-const UserRole = require('./permissions')
+
 require('dotenv').config()
 
 //get and return token from header, returns null if none exists in header
@@ -55,5 +55,10 @@ module.exports = {
                 next();
             }
         }
+    },
+    //change this later
+    isAdmin: (req, res, next) => {
+        if(req.token.role_id == 3){ next() }
+        else{ res.status(200).json({msg: 'User is not admin'})}
     }
 }

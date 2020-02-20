@@ -13,7 +13,7 @@ module.exports = {
         .then((moduleObject) => {if(!moduleObject){throw 'err'} else { res.status(200).json(moduleObject) }})
         .catch(() => { res.status(200).json( {msg: 'Cannot find module'})})
     },
-    //get 10 most published modules where page >=1
+    //get 10 most recent published modules where page >=1
     getRecentPublished: async (req, res) => {
         Joi.object({ page: Joi.number().required() })
         .validate({ page: req.query.page })
@@ -29,6 +29,7 @@ module.exports = {
                 else { res.status(200).json({ modules: moduleObjects }) } })
         .catch((e) => { res.json({ msg: 'Invalid page' }) })
     },
+    //get 10 most recent submitted modules
     getSubmitted: async (req,res) => {
         Joi.object({ page: Joi.number().required() })
             .validate({ page: req.query.page })
@@ -59,6 +60,12 @@ module.exports = {
                 if(moduleObjects.length == 0){ res.status(200).json({msg: 'No modules left'})} 
                 else { res.status(200).json({ modules: moduleObjects }) } })
         .catch((e) => { res.json({msg: 'Invalid page'}) })
+    },
+
+    getTreeData: async (req,res) => {
+        Module.findAll({attributes: ['title', 'module_id', 'parent_id'], where : {status: 'publish'}})
+        .then((moduleObjects) => { res.status(200).json({modules: moduleObjects})})
+        .catch((e) => {res.json({msg: 'Error getting published modules'})})
     },
     //returns owned module by ID
     load: (req, res) =>{
